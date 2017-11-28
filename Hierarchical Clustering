@@ -1,0 +1,47 @@
+import matplotlib.pyplot as plt
+import pandas as pd
+import numpy as np
+from sklearn.datasets import make_blobs
+from sklearn.metrics import confusion_matrix, accuracy_score
+from sklearn.cluster import AgglomerativeClustering
+from sklearn.metrics import confusion_matrix
+from scipy.cluster.hierarchy import dendrogram, linkage
+from sklearn.metrics import adjusted_rand_score
+
+# =============================================================================
+# Input : We have created a 3 cluster group, our motive to use hierarchichal 
+# clustering to figure by itself which clusters these data points belong to.
+# =============================================================================
+X, y = make_blobs(n_samples=500, 
+                    centers=3, 
+                    center_box = (-10.0,10.0),
+                    n_features = 2,
+                    cluster_std = 1.0,
+                    random_state = 21)
+
+#Data is scattered as shown below:
+plt.scatter(X[:,0], X[:, 1], c = y)
+
+#plotting dendrogram
+
+Z = linkage(X)
+
+dendrogram(
+    Z,
+    truncate_mode="lastp",  # show only the last p merged clusters
+    p=20,  # show only the last p merged clusters
+    show_leaf_counts=True,  # numbers in brackets are counts, others idx
+    leaf_rotation=60.,
+    leaf_font_size=8.,
+    show_contracted=True,  # to get a distribution impression in truncated branches
+)
+
+#In dendrogram, we can see, there are distinct 3 clusters at level 5
+
+
+#model(setting n_clusters = 3)
+ac = AgglomerativeClustering(n_clusters=3, affinity='euclidean', linkage='ward')
+
+#Predictions and checking accuracy
+
+adjusted_rand_score(y, ac.fit_predict(X))
